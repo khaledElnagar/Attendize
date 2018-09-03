@@ -4,6 +4,7 @@ namespace App\Models;
 
 use File;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use PDF;
 
 class Order extends MyBaseModel
@@ -165,6 +166,14 @@ class Order extends MyBaseModel
         $this->save();
 
         return file_exists($pdf_file);
+    }
+
+    public static function getNextId()
+    {
+        $statement = DB::select("show table status like 'orders'");
+
+        return  $statement[0]->Auto_increment;
+
     }
 
     /**

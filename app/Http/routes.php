@@ -729,6 +729,18 @@ Route::group(
         });
     });
 
+
+    Route::get('/payfort/payment',[
+        'as'=>'responsePayfort',
+        'uses' => 'EventCheckoutController@payfortPaymentDone',
+    ]);
+
+
+    Route::post('/payfort/payment',[
+        'as'=>'responsePayfort',
+        'uses' => 'EventCheckoutController@payfortPaymentDone',
+    ]);
+
     Route::get('/', function () {
         return Redirect::route('showSelectOrganiser');
         // I prefer it that way:

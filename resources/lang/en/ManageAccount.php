@@ -49,4 +49,12 @@ return array (
   'version_up_to_date' => 'Your Attendize version (<b>:installed</b>) is up to date!',
     'account_payment' => 'Account / Payment',
     'event_attendees' => 'Event attendees',
+    'merchantIdentifier' => 'merchant Identifier',
+    'accessCode' => 'access Code',
+    'command' => 'command',
+    'hashAlgorithm' => 'hash Algorithm',
+    'requestSHAPhrase' => 'request SHA Phrase',
+    'responseSHAPhrase' => 'response SHA Phrase',
+    'sandboxMode' => 'sandbox Mode',
+    'integrationType' => 'integration Type',
 );

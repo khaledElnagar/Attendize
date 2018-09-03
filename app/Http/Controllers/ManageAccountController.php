@@ -139,6 +139,9 @@ class ManageAccountController extends MyBaseController
 			case config('attendize.payment_gateway_migs') : //MIGS
 				$config = $request->get('migs');
 				break;
+			case config('attendize.payment_gateway_payfort') : //MIGS
+				$config = $request->get('payfort');
+				break;
         }
 
         $account_payment_gateway = AccountPaymentGateway::firstOrNew(

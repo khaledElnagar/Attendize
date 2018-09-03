@@ -151,6 +151,10 @@
 
 </section>
 
+{{--Payfort--}}
+<section class="payment_gateway_options"  id="gateway_{{config('attendize.payment_gateway_payfort')}}">
+</section>
+
 
 
 

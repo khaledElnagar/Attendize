@@ -172,6 +172,7 @@ return [
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,
         Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
         Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider::class,
+        LaravelPayfort\Providers\PayfortServiceProvider::class,
     ],
 
     /*
@@ -236,6 +237,7 @@ return [
         'Omnipay'      => Omnipay\Omnipay::class,
        // 'Omnipay'      => Omnipay\Omnipay::class,
         'LaravelLocalization' => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
+        'Payfort' => LaravelPayfort\Facades\Payfort::class
 
     ],
 ];
