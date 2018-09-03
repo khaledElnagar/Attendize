@@ -38,6 +38,12 @@
                     <h5>
                         @lang("Public_ViewEvent.total"): <span style="float: right;"><b>{{ $orderService->getOrderTotalWithBookingFee(true) }}</b></span>
                     </h5>
+                    <h5>@lang("Public_ViewEvent.applyCoupon")</h5>
+                    <form action="{{route('coupon.store', ['event_id' => $event->id])}}" method="post">
+                        {{csrf_field()}}
+                        <input type="text" placeholder="@lang("Public_ViewEvent.coupon")" name="coupon_code">
+                        <button type="submit" class="button button-plain">Apply</button>
+                    </form>
                     @if($event->organiser->charge_tax)
                     <h5>
                         {{ $event->organiser->tax_name }} ({{ $event->organiser->tax_value }}%):

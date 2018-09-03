@@ -746,12 +746,15 @@ class EventCheckoutController extends Controller
      */
     public function payWithPayfort(Request $request,$event_id)
     {
+        $event = Event::findOrFail($event_id);
         $ticket_order = session()->get('ticket_order_' . $event_id);
         $request_data = $ticket_order['request_data'][0];
+        $orderService = new OrderService($ticket_order['order_total'], $ticket_order['total_booking_fee'], $event);
+        $orderService->calculateFinalCosts();
         return Payfort::redirection()->displayRedirectionPage([
             'command' => 'PURCHASE',              # AUTHORIZATION/PURCHASE according to your operation.
             'merchant_reference' => $event_id.'-'.Order::getNextId(),   # You reference id for this operation (Order id for example).
-            'amount' => $ticket_order['order_total'],                           # The operation amount.
+            'amount' => $orderService->getGrandTotal(),                           # The operation amount.
             'currency' => 'SAR',                       # Optional if you need to use another currenct than set in config.
             'customer_email' => $request_data['order_email']  # Customer email.
         ]);

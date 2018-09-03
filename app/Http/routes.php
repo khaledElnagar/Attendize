@@ -741,6 +741,16 @@ Route::group(
         'uses' => 'EventCheckoutController@payfortPaymentDone',
     ]);
 
+    Route::post('/coupon/{event_id}',[
+        'as'=>'coupon.store',
+        'uses' => 'CouponsController@store',
+    ]);
+
+    Route::delete('/coupon',[
+        'as'=>'coupon.destroy',
+        'uses' => 'CouponsController@destroy',
+    ]);
+
     Route::get('/', function () {
         return Redirect::route('showSelectOrganiser');
         // I prefer it that way:
