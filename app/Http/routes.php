@@ -210,9 +210,9 @@ Route::group(
 
         });
 
-        /*
-         * Manage account
-         */
+            /*
+             * Manage account
+             */
         Route::group(['prefix' => 'account'], function () {
 
             Route::get('/', [
@@ -277,6 +277,13 @@ Route::group(
                 'as'   => 'postEditOrganiserPageDesign',
                 'uses' => 'OrganiserCustomizeController@postEditOrganiserPageDesign'
             ]);
+
+            Route::get('{organiser_id}/coupons', [
+                'as'   => 'showOrganiserCoupons',
+                'uses' => 'CouponsController@showCouponsList',
+            ]);
+
+
         });
 
         /*
@@ -297,6 +304,26 @@ Route::group(
             Route::post('/create', [
                 'as'   => 'postCreateEvent',
                 'uses' => 'EventController@postCreateEvent',
+            ]);
+        });
+
+        /*
+         * Coupons dashboard
+         */
+        Route::group(['prefix' => 'Coupons'], function () {
+
+            /*
+             * ----------
+             * Create Coupon
+             * ----------
+             */
+            Route::get('create', [
+                'as'   => 'showCreateCoupon',
+                'uses' => 'CouponsController@showCreateCoupon',
+            ]);
+            Route::post('/create', [
+                'as'   => 'postCreateCoupon',
+                'uses' => 'CouponsController@postCreateCoupon',
             ]);
         });
 

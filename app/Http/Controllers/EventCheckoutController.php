@@ -568,6 +568,11 @@ class EventCheckoutController extends Controller
             $order->booking_fee = $ticket_order['booking_fee'];
             $order->organiser_booking_fee = $ticket_order['organiser_booking_fee'];
             $order->discount = 0.00;
+            if(session()->has('coupon'))
+            {
+                $order->discount = session()->get('coupon')['discount'];
+                $order->coupon_id = session()->get('coupon')['id'];
+            }
             $order->account_id = $event->account->id;
             $order->event_id = $ticket_order['event_id'];
             $order->is_payment_received = isset($request_data['pay_offline']) ? 0 : 1;
@@ -717,7 +722,7 @@ class EventCheckoutController extends Controller
         }
 
         DB::commit();
-
+        session()->forget('coupon');
         if ($return_json) {
             return response()->json([
                 'status'      => 'success',
