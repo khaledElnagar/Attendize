@@ -49,6 +49,7 @@ return array (
   'organiser_name_dashboard' => ':name Dashboard',
   'organiser_name_events' => ':name Events',
   'organiser_name_placeholder' => 'Who\'s organising the event?',
+  'organiser_name_coupons' => ':name Coupons',
   'organiser_page' => 'Organiser Page',
   'organiser_page_design' => 'Organiser Page Design',
   'organiser_page_preview' => 'Organiser Page Preview',
@@ -69,4 +70,5 @@ return array (
   'select_organiser' => 'Select Organiser',
   'text_color' => 'Text Color',
   'tickets_sold' => 'Tickets Sold',
+  'coupons' => 'Coupons',
 );

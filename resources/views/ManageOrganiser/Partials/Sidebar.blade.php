@@ -18,7 +18,7 @@
 
             <li class="{{ Request::is('*coupons*') ? 'active' : '' }}">
                 <a href="{{route('showOrganiserCoupons', array('organiser_id' => $organiser->id))}}">
-                    <span class="figure"><i class="ico-cog"></i></span>
+                    <span class="figure"><i class="ico-money"></i></span>
                     <span class="text">@lang("Organiser.coupons")</span>
                 </a>
             </li>
