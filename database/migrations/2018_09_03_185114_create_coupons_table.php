@@ -17,6 +17,7 @@ class CreateCouponsTable extends Migration
             $table->increments('id');
             $table->integer('account_id')->unsigned()->index();
             $table->integer('organiser_id')->unsigned()->index();
+            $table->integer('user_id')->unsigned()->index();
             $table->string('code')->unique();
             $table->string('type');
             $table->integer('value')->nullable();

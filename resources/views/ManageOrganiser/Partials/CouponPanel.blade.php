@@ -3,7 +3,7 @@
         <ul class="event-meta">
             <li class="event-title">
                 <a title="{{{$coupon->code}}}" href="{{route('showEventDashboard', ['event_id'=>$coupon->id])}}">
-                    {{{ str_limit($coupon->code, $limit = 75, $end = '...') }}}
+                    {{{ str_limit($coupon->code, $limit = 75, $end = '...') }}} /  <strong>@if($coupon->is_active) Active @else Not active @endif</strong>
                 </a>
             </li>
             <li class="event-organiser">
@@ -11,6 +11,7 @@
             </li>
             <li class="end-date">
                 Ends at <strong>{{{$coupon->end_date}}}</strong>
+
             </li>
         </ul>
 
@@ -29,10 +30,12 @@
             </li>
         </ul>
     </div>
+
+
     <div class="panel-footer">
         <ul class="nav nav-section nav-justified">
             <li>
-                <a href="{{route('showEventCustomize', ['coupon_id' => $coupon->id])}}">
+                <a href="#" data-modal-id="EditCoupon" data-href="{{route('showEditCoupon', ['coupon_id' => @$coupon->id])}}" class="loadModal">
                     <i class="ico-edit"></i> @lang("basic.edit")
                 </a>
             </li>

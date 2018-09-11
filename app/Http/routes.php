@@ -325,6 +325,14 @@ Route::group(
                 'as'   => 'postCreateCoupon',
                 'uses' => 'CouponsController@postCreateCoupon',
             ]);
+            Route::get('edit/{coupon_id}', [
+                'as'   => 'showEditCoupon',
+                'uses' => 'CouponsController@showEditCoupon',
+            ]);
+            Route::post('/update/{coupon_id}', [
+                'as'   => 'postEditCoupon',
+                'uses' => 'CouponsController@postEditCoupon',
+            ]);
         });
 
         /*
