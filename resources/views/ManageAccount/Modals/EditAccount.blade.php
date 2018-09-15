@@ -31,9 +31,11 @@
                         <!-- tab -->
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#general_account" data-toggle="tab">@lang("ManageAccount.general")</a></li>
-                            <li><a href="#payment_account" data-toggle="tab">@lang("ManageAccount.payment")</a></li>
-                            <li><a href="#users_account" data-toggle="tab">@lang("ManageAccount.users")</a></li>
-                            <li><a href="#about" data-toggle="tab">@lang("ManageAccount.about")</a></li>
+                            @if(auth()->user()->isSuperAdmin())
+                                <li><a href="#payment_account" data-toggle="tab">@lang("ManageAccount.payment")</a></li>
+                                <li><a href="#users_account" data-toggle="tab">@lang("ManageAccount.users")</a></li>
+                                <li><a href="#about" data-toggle="tab">@lang("ManageAccount.about")</a></li>
+                            @endif()
                         </ul>
                         <div class="tab-content panel">
                             <div class="tab-pane active" id="general_account">
@@ -121,12 +123,19 @@
                                         @endforeach
                                         <tr>
                                             <td colspan="3">
-                                                <div class="input-group">
+                                                <div class="form-group">
                                                     {!! Form::text('email', '',  ['class' => 'form-control', 'placeholder' => trans("ManageAccount.email_address_placeholder")]) !!}
-                                                    <span class="input-group-btn">
+                                                </div>
+                                                <div class="form-group">
+                                                    {!! Form::select('event_id',$events,'',['class' => 'form-control', 'placeholder' => trans("ManageAccount.select_event")]) !!}
+                                                    <span class="help-block">
+                                                    @lang("ManageAccount.add_user_help_block_event_select")
+                                                </span>
+
+                                                </div>
+                                                <span class="input-group-btn">
                                                           {!!Form::submit(trans("ManageAccount.add_user_submit"), ['class' => 'btn btn-primary'])!!}
                                                     </span>
-                                                </div>
                                                 <span class="help-block">
                                                     @lang("ManageAccount.add_user_help_block")
                                                 </span>

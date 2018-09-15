@@ -210,9 +210,9 @@ Route::group(
 
         });
 
-        /*
-         * Manage account
-         */
+            /*
+             * Manage account
+             */
         Route::group(['prefix' => 'account'], function () {
 
             Route::get('/', [
@@ -277,6 +277,13 @@ Route::group(
                 'as'   => 'postEditOrganiserPageDesign',
                 'uses' => 'OrganiserCustomizeController@postEditOrganiserPageDesign'
             ]);
+
+            Route::get('{organiser_id}/coupons', [
+                'as'   => 'showOrganiserCoupons',
+                'uses' => 'CouponsController@showCouponsList',
+            ]);
+
+
         });
 
         /*
@@ -297,6 +304,34 @@ Route::group(
             Route::post('/create', [
                 'as'   => 'postCreateEvent',
                 'uses' => 'EventController@postCreateEvent',
+            ]);
+        });
+
+        /*
+         * Coupons dashboard
+         */
+        Route::group(['prefix' => 'Coupons'], function () {
+
+            /*
+             * ----------
+             * Create Coupon
+             * ----------
+             */
+            Route::get('create', [
+                'as'   => 'showCreateCoupon',
+                'uses' => 'CouponsController@showCreateCoupon',
+            ]);
+            Route::post('/create', [
+                'as'   => 'postCreateCoupon',
+                'uses' => 'CouponsController@postCreateCoupon',
+            ]);
+            Route::get('edit/{coupon_id}', [
+                'as'   => 'showEditCoupon',
+                'uses' => 'CouponsController@showEditCoupon',
+            ]);
+            Route::post('/update/{coupon_id}', [
+                'as'   => 'postEditCoupon',
+                'uses' => 'CouponsController@postEditCoupon',
             ]);
         });
 
@@ -728,6 +763,28 @@ Route::group(
             ]);
         });
     });
+
+
+    Route::get('/payfort/payment',[
+        'as'=>'responsePayfort',
+        'uses' => 'EventCheckoutController@payfortPaymentDone',
+    ]);
+
+
+    Route::post('/payfort/payment',[
+        'as'=>'responsePayfort',
+        'uses' => 'EventCheckoutController@payfortPaymentDone',
+    ]);
+
+    Route::post('/coupon/{event_id}',[
+        'as'=>'coupon.store',
+        'uses' => 'CouponsController@store',
+    ]);
+
+    Route::delete('/coupon',[
+        'as'=>'coupon.destroy',
+        'uses' => 'CouponsController@destroy',
+    ]);
 
     Route::get('/', function () {
         return Redirect::route('showSelectOrganiser');

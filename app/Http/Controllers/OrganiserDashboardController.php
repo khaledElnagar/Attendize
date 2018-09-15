@@ -15,6 +15,9 @@ class OrganiserDashboardController extends MyBaseController
      */
     public function showDashboard($organiser_id)
     {
+        if(!auth()->user()->isSuperAdmin())
+            return redirect()->route('showOrganiserEvents',['organiser_id'=>$organiser_id]);
+
         $organiser = Organiser::scope()->findOrFail($organiser_id);
         $upcoming_events = $organiser->events()->where('end_date', '>=', Carbon::now())->get();
         $calendar_events = [];

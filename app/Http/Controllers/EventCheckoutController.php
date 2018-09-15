@@ -20,10 +20,12 @@ use Carbon\Carbon;
 use Cookie;
 use DB;
 use Illuminate\Http\Request;
+use LaravelPayfort\Facades\Payfort;
 use Log;
 use Omnipay;
 use PDF;
 use PhpSpec\Exception\Exception;
+use function PHPSTORM_META\elementType;
 use Validator;
 
 class EventCheckoutController extends Controller
@@ -335,6 +337,10 @@ class EventCheckoutController extends Controller
                 return $this->completeOrder($event_id);
             }
 
+            if ($ticket_order['payment_gateway']->id == config('attendize.payment_gateway_payfort')) {
+                return $this->payWithPayfort($request,$event_id);
+            }
+
             try {
                 $transaction_data = [];
                 if (config('attendize.enable_dummy_payment_gateway') == TRUE) {
@@ -562,6 +568,11 @@ class EventCheckoutController extends Controller
             $order->booking_fee = $ticket_order['booking_fee'];
             $order->organiser_booking_fee = $ticket_order['organiser_booking_fee'];
             $order->discount = 0.00;
+            if(session()->has('coupon'))
+            {
+                $order->discount = session()->get('coupon')['discount'];
+                $order->coupon_id = session()->get('coupon')['id'];
+            }
             $order->account_id = $event->account->id;
             $order->event_id = $ticket_order['event_id'];
             $order->is_payment_received = isset($request_data['pay_offline']) ? 0 : 1;
@@ -711,7 +722,7 @@ class EventCheckoutController extends Controller
         }
 
         DB::commit();
-
+        session()->forget('coupon');
         if ($return_json) {
             return response()->json([
                 'status'      => 'success',
@@ -728,6 +739,51 @@ class EventCheckoutController extends Controller
         ]);
 
 
+    }
+
+    /**
+     * Pay With payfort
+     *
+     * @param $request
+     * @param $event_id
+     * @param bool|true $return_json
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function payWithPayfort(Request $request,$event_id)
+    {
+        $event = Event::findOrFail($event_id);
+        $ticket_order = session()->get('ticket_order_' . $event_id);
+        $request_data = $ticket_order['request_data'][0];
+        $orderService = new OrderService($ticket_order['order_total'], $ticket_order['total_booking_fee'], $event);
+        $orderService->calculateFinalCosts();
+        return Payfort::redirection()->displayRedirectionPage([
+            'command' => 'PURCHASE',              # AUTHORIZATION/PURCHASE according to your operation.
+            'merchant_reference' => $event_id.'-'.Order::getNextId(),   # You reference id for this operation (Order id for example).
+            'amount' => $orderService->getGrandTotal(),                           # The operation amount.
+            'currency' => 'SAR',                       # Optional if you need to use another currenct than set in config.
+            'customer_email' => $request_data['order_email']  # Customer email.
+        ]);
+    }
+
+    public function payfortPaymentDone(Request $request)
+    {
+        $responseSignature = Payfort::redirection()->calcPayfortSignature($request->all(),'response');
+        $references = explode('-',$request->get('merchant_reference'));
+        $event_id = $references[0];
+        if($responseSignature == $request->get('signature'))
+        {
+
+            if((int)$request->get('response_code') === 14000)
+            {
+               return $this->completeOrder($event_id,false);
+            }
+        }
+
+        session()->flash('message', 'Whoops! There was a problem processing your order. Please try again.');
+        return response()->redirectToRoute('showEventCheckout', [
+            'event_id'             => $event_id,
+            'is_payment_cancelled' => 1,
+        ]);
     }
 
     /**

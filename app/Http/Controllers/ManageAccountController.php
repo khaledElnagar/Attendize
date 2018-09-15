@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\AccountPaymentGateway;
 use App\Models\Currency;
+use App\Models\Event;
 use App\Models\PaymentGateway;
 use App\Models\Timezone;
 use App\Models\User;
@@ -29,6 +30,7 @@ class ManageAccountController extends MyBaseController
     {
         $data = [
             'account'                  => Account::find(Auth::user()->account_id),
+            'events'                  => Event::where('account_id', '=', Auth::user()->account_id)->lists('title','id'),
             'timezones'                => Timezone::lists('location', 'id'),
             'currencies'               => Currency::lists('title', 'id'),
             'payment_gateways'         => PaymentGateway::lists('provider_name', 'id'),
@@ -139,6 +141,9 @@ class ManageAccountController extends MyBaseController
 			case config('attendize.payment_gateway_migs') : //MIGS
 				$config = $request->get('migs');
 				break;
+			case config('attendize.payment_gateway_payfort') : //MIGS
+				$config = $request->get('payfort');
+				break;
         }
 
         $account_payment_gateway = AccountPaymentGateway::firstOrNew(
@@ -192,6 +197,7 @@ class ManageAccountController extends MyBaseController
         $user = new User();
 
         $user->email = Input::get('email');
+        $user->event_id = Input::get('event_id');
         $user->password = Hash::make($temp_password);
         $user->account_id = Auth::user()->account_id;
 

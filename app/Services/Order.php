@@ -56,7 +56,11 @@ class Order
      */
     public function calculateFinalCosts()
     {
-        $this->orderTotalWithBookingFee = $this->orderTotal + $this->totalBookingFee;
+        $discount = 0 ;
+        if(session()->has('coupon'))
+            $discount = session()->get('coupon')['discount'];
+
+        $this->orderTotalWithBookingFee = $this->orderTotal + $this->totalBookingFee - $discount;
 
         if ($this->event->organiser->charge_tax == 1) {
             $this->taxAmount = ($this->orderTotalWithBookingFee * $this->event->organiser->tax_value)/100;

@@ -155,4 +155,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
             $user->api_token = str_random(60);
         });
     }
+
+
+
+    public function isSuperAdmin()
+    {
+        if($this->event_id == null || $this->event_id ==0)
+            return true;
+
+        return false;
+    }
+
 }

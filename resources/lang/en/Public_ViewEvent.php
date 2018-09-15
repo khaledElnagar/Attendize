@@ -78,4 +78,10 @@ return array (
   'your_information' => 'Your information',
   'your_message' => 'Your message',
   'your_name' => 'Your name',
+  'discount' => 'Discount',
+  'remove' => 'Remove',
+  'newTotal' => 'New Total',
+  'applyCoupon' => 'Apply Coupon',
+  'removeCoupon' => 'Remove Coupon',
+  'coupon' => 'Coupon',
 );

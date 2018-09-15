@@ -19,6 +19,9 @@ class EventDashboardController extends MyBaseController
      */
     public function showDashboard($event_id = false)
     {
+        if(!auth()->user()->isSuperAdmin() && auth()->user()->event_id != $event_id)
+            return redirect()->back();
+
         $event = Event::scope()->findOrFail($event_id);
 
         $num_days = 20;

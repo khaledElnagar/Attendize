@@ -45,6 +45,14 @@ class PaymentGatewaySeeder extends Seeder
                 'is_on_site' => 0,
                 'can_refund' => 0,
             ],
+            [
+                'id' => 5,
+                'name' => 'Payfort',
+                'provider_name' => 'Payfort',
+                'provider_url' => 'https://www.payfort.com',
+                'is_on_site' => 0,
+                'can_refund' => 0,
+            ],
         ];
 
         DB::table('payment_gateways')->insert($payment_gateways);

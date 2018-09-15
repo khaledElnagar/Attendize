@@ -122,6 +122,7 @@ class CreateUsersTable extends Migration
 
             $t->increments('id');
             $t->unsignedInteger('account_id')->index();
+            $t->integer('event_id')->unsigned()->nullable()->index();
             $t->nullableTimestamps();
             $t->softDeletes();
 
@@ -246,7 +247,7 @@ class CreateUsersTable extends Migration
 
             $t->string('order_reference', 15);
             $t->string('transaction_id', 50)->nullable();
-
+            $t->integer('coupon_id')->nullable()->unsigned();
             $t->decimal('discount', 8, 2)->nullable();
             $t->decimal('booking_fee', 8, 2)->nullable();
             $t->decimal('organiser_booking_fee', 8, 2)->nullable();

@@ -10,6 +10,7 @@ use Validator;
 
 class EventCustomizeController extends MyBaseController
 {
+
     /**
      * Show the event customize page
      *
@@ -19,6 +20,9 @@ class EventCustomizeController extends MyBaseController
      */
     public function showCustomize($event_id = '', $tab = '')
     {
+        if(!auth()->user()->isSuperAdmin() && auth()->user()->event_id != $event_id)
+            return redirect()->back();
+
         $data = $this->getEventViewData($event_id, [
             'available_bg_images'        => $this->getAvailableBackgroundImages(),
             'available_bg_images_thumbs' => $this->getAvailableBackgroundImagesThumbs(),

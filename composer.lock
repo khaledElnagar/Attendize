@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b6551377c27f4649e1dec310117fce71",
+    "content-hash": "ee71badbe2b507e6d2d89ebb58374901",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -4990,6 +4990,65 @@
                 "environment"
             ],
             "time": "2016-09-01T10:05:43+00:00"
+        },
+        {
+            "name": "wshurafa/laravel-payfort",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wshurafa/laravel-payfort.git",
+                "reference": "da0acd2eb6a08971daf7ca9a7123ea6005be7609"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wshurafa/laravel-payfort/zipball/da0acd2eb6a08971daf7ca9a7123ea6005be7609",
+                "reference": "da0acd2eb6a08971daf7ca9a7123ea6005be7609",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~5.0|~6.0",
+                "illuminate/support": "~5.0",
+                "nesbot/carbon": "~1.0",
+                "php": ">=5.5.9"
+            },
+            "require-dev": {
+                "fabpot/goutte": "~3.2",
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "LaravelPayfort\\Providers\\PayfortServiceProvider"
+                    ],
+                    "aliases": {
+                        "Payfort": "LaravelPayfort\\Facades\\Payfort"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "LaravelPayfort\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Wael AlShurafa",
+                    "email": "wael.shorafa@gmail.com"
+                }
+            ],
+            "description": "Laravel-payfort is a simple package to process payments throught Payfort payment gateway.",
+            "keywords": [
+                "http",
+                "laravel payfort",
+                "payfort",
+                "payment"
+            ],
+            "time": "2018-06-30T06:19:58+00:00"
         }
     ],
     "packages-dev": [
@@ -6286,7 +6345,8 @@
         "vinelab/http": 20,
         "maxhoffmann/parsedown-laravel": 20,
         "omnipay/bitpay": 20,
-        "omnipay/coinbase": 20
+        "omnipay/coinbase": 20,
+        "wshurafa/laravel-payfort": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

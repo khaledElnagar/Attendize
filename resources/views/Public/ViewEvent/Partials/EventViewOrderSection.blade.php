@@ -54,10 +54,12 @@
                 <i class="ico ico-checkmark-circle"></i>
             </span>
             <h1>@lang("Public_ViewEvent.thank_you_for_your_order")</h1>
-            <h2>
-                @lang("Public_ViewEvent.download_links", ["title" => trans("Public_ViewEvent.download_tickets"), "url"=>route('showOrderTickets', ['order_reference' => $order->order_reference])."?download=1"])
+            @if($order->order_status_id == 1)
+                <h2>
+                    @lang("Public_ViewEvent.download_links", ["title" => trans("Public_ViewEvent.download_tickets"), "url"=>route('showOrderTickets', ['order_reference' => $order->order_reference])."?download=1"])
 
-            </h2>
+                </h2>
+            @endif
         </div>
     </div>
 
