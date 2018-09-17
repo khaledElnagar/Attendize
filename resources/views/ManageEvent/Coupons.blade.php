@@ -6,27 +6,27 @@
 @stop
 
 @section('page_title')
-    @lang("Organiser.organiser_name_coupons", ["name"=>$organiser->name])
+    @lang("Organiser.organiser_name_coupons", ["name"=>$event->name])
 @stop
 
 @section('top_nav')
-    @include('ManageOrganiser.Partials.TopNav')
+    @include('ManageEvent.Partials.TopNav')
 @stop
 
 @section('menu')
-    @include('ManageOrganiser.Partials.Sidebar')
+    @include('ManageEvent.Partials.Sidebar')
 @stop
 
 @section('page_header')
     <div class="col-md-9">
         <div class="btn-toolbar">
             <div class="btn-group btn-group-responsive">
-                <a href="#" data-modal-id="CreateCoupon" data-href="{{route('showCreateCoupon', ['organiser_id' => @$organiser->id])}}" class="btn btn-success loadModal"><i class="ico-plus"></i> @lang("Coupon.create_coupon")</a>
+                <a href="#" data-modal-id="CreateCoupon" data-href="{{route('showCreateCoupon', ['event_id' => @$event->id])}}" class="btn btn-success loadModal"><i class="ico-plus"></i> @lang("Coupon.create_coupon")</a>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        {!! Form::open(array('url' => route('showOrganiserCoupons', ['organiser_id'=>$organiser->id]), 'method' => 'get')) !!}
+        {!! Form::open(array('url' => route('showOrganiserCoupons', ['event_id'=>$event->id]), 'method' => 'get')) !!}
         <div class="input-group">
             <input name="q" value="{{$search['q'] or ''}}" placeholder="Search Events.." type="text" class="form-control">
         <span class="input-group-btn">
@@ -56,7 +56,7 @@
         @if($coupons->count())
             @foreach($coupons as $coupon)
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                    @include('ManageOrganiser.Partials.CouponPanel')
+                    @include('ManageEvent.Partials.CouponPanel')
                 </div>
             @endforeach
         @else

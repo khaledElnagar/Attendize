@@ -56,6 +56,12 @@
                                     <input name="is_active" type="checkbox" value="1" id="is_active" @if($coupon->is_active == 1) checked @endif >
                                 </div>
                             </div>
+                             <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('limit_number', trans("Coupon.limit_number"), array('class'=>'control-label required')) !!}
+                                    {!!  Form::text('limit_number', $coupon->limit_number,array('class'=>'form-control','placeholder'=>trans("Coupon.limit_number")))  !!}
+                                </div>
+                             </div>
                         </div>
                     </div>
                 </div>

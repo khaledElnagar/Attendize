@@ -26,9 +26,9 @@ class Coupon extends MyBaseModel
     ];
 
 
-    public static function findByCode($code)
+    public static function findByCode($code,$event_id)
     {
-        return self::where('code',$code)->where('end_date','<=',date('Y-m-d'))->where('isAcive',1)->first();
+        return self::where('code',$code)->where('end_date','>=',date('Y-m-d H:i:s'))->where('is_active',1)->where('event_id',$event_id)->first();
     }
 
     public function organiser()

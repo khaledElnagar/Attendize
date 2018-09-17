@@ -18,10 +18,12 @@ class CreateCouponsTable extends Migration
             $table->integer('account_id')->unsigned()->index();
             $table->integer('organiser_id')->unsigned()->index();
             $table->integer('user_id')->unsigned()->index();
+            $table->integer('event_id')->unsigned()->index();
             $table->string('code')->unique();
             $table->string('type');
             $table->integer('value')->nullable();
             $table->integer('percent_off')->nullable();
+            $table->integer('limit_number')->nullable();
             $table->timestamp('end_date');
             $table->tinyInteger('is_active')->default(1);
             $table->timestamps();

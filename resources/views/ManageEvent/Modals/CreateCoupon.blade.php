@@ -44,10 +44,18 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('limit_number', trans("Coupon.limit_number"), array('class'=>'control-label required')) !!}
+                                    {!!  Form::text('limit_number', Input::old('limit_number'),array('class'=>'form-control','placeholder'=>trans("Coupon.limit_number")))  !!}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-                {!! Form::hidden('organiser_id', $organiser_id) !!}
+                {!! Form::hidden('event_id', $event_id) !!}
             <div class="modal-footer">
                 <span class="uploadProgress"></span>
                 {!! Form::button(trans("basic.cancel"), ['class'=>"btn modal-close btn-danger",'data-dismiss'=>'modal']) !!}

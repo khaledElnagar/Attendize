@@ -277,13 +277,6 @@ Route::group(
                 'as'   => 'postEditOrganiserPageDesign',
                 'uses' => 'OrganiserCustomizeController@postEditOrganiserPageDesign'
             ]);
-
-            Route::get('{organiser_id}/coupons', [
-                'as'   => 'showOrganiserCoupons',
-                'uses' => 'CouponsController@showCouponsList',
-            ]);
-
-
         });
 
         /*
@@ -310,7 +303,7 @@ Route::group(
         /*
          * Coupons dashboard
          */
-        Route::group(['prefix' => 'Coupons'], function () {
+        Route::group(['prefix' => '{event_id}/Coupons'], function () {
 
             /*
              * ----------
@@ -362,6 +355,11 @@ Route::group(
                     'event_id' => $event_id,
                 ]);
             });
+
+            Route::get('{event_id}/coupons', [
+                'as'   => 'showOrganiserCoupons',
+                'uses' => 'CouponsController@showCouponsList',
+            ]);
 
             /*
              * @todo Move to a controller
@@ -781,7 +779,7 @@ Route::group(
         'uses' => 'CouponsController@store',
     ]);
 
-    Route::delete('/coupon',[
+    Route::delete('/coupon/{event_id}/delete',[
         'as'=>'coupon.destroy',
         'uses' => 'CouponsController@destroy',
     ]);

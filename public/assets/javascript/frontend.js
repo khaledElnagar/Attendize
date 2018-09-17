@@ -4567,7 +4567,7 @@ function log() {
 
 }).call(this);
 ;$(function() {
-    $('form.ajax').on('submit', function(e) {
+    $(document).on('submit','form.ajax', function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
 
@@ -4603,6 +4603,9 @@ function log() {
 
                         if (data.message) {
                             showMessage(data.message);
+                        }
+                        if (typeof data.replace !== 'undefined') {
+                            $('#replacePart').html(data.responseHtml);
                         }
                         switch (data.status) {
                             case 'success':

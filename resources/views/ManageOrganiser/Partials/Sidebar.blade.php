@@ -16,14 +16,6 @@
                         <span class="text">@lang("Organiser.event")</span>
                     </a>
                 </li>
-
-                <li class="{{ Request::is('*coupons*') ? 'active' : '' }}">
-                    <a href="{{route('showOrganiserCoupons', array('organiser_id' => $organiser->id))}}">
-                        <span class="figure"><i class="ico-money"></i></span>
-                        <span class="text">@lang("Organiser.coupons")</span>
-                    </a>
-                </li>
-
                 <li class="{{ Request::is('*customize*') ? 'active' : '' }}">
                     <a href="{{route('showOrganiserCustomize', array('organiser_id' => $organiser->id))}}">
                         <span class="figure"><i class="ico-cog"></i></span>

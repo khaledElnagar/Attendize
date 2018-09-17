@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Coupon;
+use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Organiser;
 use Log;
 use Auth;
 use Validator;
+use App\Services\Order as OrderService;
 
 use App\Http\Requests;
 
@@ -24,7 +26,7 @@ class CouponsController extends MyBaseController
      */
     public function store(Request $request,$event_id)
     {
-        $coupon = Coupon::where('code',$request->get('coupon_code'))->first();
+        $coupon = Coupon::findByCode($request->get('coupon_code'),$event_id);
         if(!$coupon)
         {
             session()->flash('message', 'Whoops! Invalid coupon code. Please try again.');
@@ -39,9 +41,31 @@ class CouponsController extends MyBaseController
             'discount'=>$coupon->discount($ticket_order['total_booking_fee']),
         ]);
 
-        session()->flash('message', 'Success! Coupon has been applied!');
+        $order_session = session()->get('ticket_order_' . $event_id);
 
-        return redirect()->back();
+        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+
+        $event = Event::findorFail($order_session['event_id']);
+
+        $orderService = new OrderService($order_session['order_total'], $order_session['total_booking_fee'], $event);
+        $orderService->calculateFinalCosts();
+
+        $data = $order_session + [
+                'event'           => $event,
+                'secondsToExpire' => $secondsToExpire,
+                'orderService'    => $orderService
+            ];
+
+        $returnHTML = view('Public.ViewEvent.Partials.EventCreateOrderCouponSection')->with($data)->render();
+
+        return response()->json([
+            'status'      => 'success',
+            'id'          => $coupon->id,
+            'discount'    => $coupon->discount($ticket_order['total_booking_fee']),
+            'message' => 'Success! Coupon has been applied!',
+            'replace'=>1,
+            'responseHtml'=>$returnHTML,
+        ]);
     }
 
     /**
@@ -49,18 +73,40 @@ class CouponsController extends MyBaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy()
+    public function destroy($event_id)
     {
         session()->forget('coupon');
 
-        session()->flash('message', 'Coupon has been removed!');
-        return redirect()->back();
+        $order_session = session()->get('ticket_order_' . $event_id);
+
+        $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
+
+        $event = Event::findorFail($order_session['event_id']);
+
+        $orderService = new OrderService($order_session['order_total'], $order_session['total_booking_fee'], $event);
+        $orderService->calculateFinalCosts();
+
+        $data = $order_session + [
+                'event'           => $event,
+                'secondsToExpire' => $secondsToExpire,
+                'orderService'    => $orderService
+            ];
+
+        $returnHTML = view('Public.ViewEvent.Partials.EventCreateOrderCouponSection')->with($data)->render();
+
+        return response()->json([
+            'status'      => 'success',
+            'message' => 'Coupon has been removed!',
+            'replace'=>1,
+            'responseHtml'=>$returnHTML,
+        ]);
+
     }
 
 
-    public function showCouponsList(Request $request,$organiser_id)
+    public function showCouponsList(Request $request,$event_id)
     {
-        $organiser = Organiser::scope()->findOrfail($organiser_id);
+        $event = Event::scope()->findOrfail($event_id);
 
         $allowed_sorts = ['created_at', 'end_date', 'isActive', 'type', 'value', 'percent', 'code'];
 
@@ -69,12 +115,12 @@ class CouponsController extends MyBaseController
 
         $coupons = $searchQuery
             ? Coupon::scope()->where('code', 'like', '%' . $searchQuery . '%')->orderBy($sort_by,
-                'desc')->where('organiser_id', '=', $organiser_id)->paginate(12)
-            : Coupon::scope()->where('organiser_id', '=', $organiser_id)->orderBy($sort_by, 'desc')->paginate(12);
+                'desc')->where('organiser_id', '=', $event_id)->paginate(12)
+            : Coupon::scope()->where('organiser_id', '=', $event_id)->orderBy($sort_by, 'desc')->paginate(12);
 
         $data = [
             'coupons'    => $coupons,
-            'organiser' => $organiser,
+            'event' => $event,
             'search'    => [
                 'q'        => $searchQuery ? $searchQuery : '',
                 'sort_by'  => $request->get('sort_by') ? $request->get('sort_by') : '',
@@ -83,7 +129,7 @@ class CouponsController extends MyBaseController
         ];
 
 
-        return view('ManageOrganiser.Coupons', $data);
+        return view('ManageEvent.Coupons', $data);
 
     }
 
@@ -91,17 +137,18 @@ class CouponsController extends MyBaseController
     {
         $data = [
             'modal_id'     => $request->get('modal_id'),
-            'organisers'   => Organiser::scope()->lists('name', 'id'),
-            'organiser_id' => $request->get('organiser_id') ? $request->get('organiser_id') : false,
+            'event_id' => $request->get('event_id') ? $request->get('event_id') : false,
         ];
 
-        return view('ManageOrganiser.Modals.CreateCoupon', $data);
+        return view('ManageEvent.Modals.CreateCoupon', $data);
     }
 
 
     public function postCreateCoupon(Request $request)
     {
-        $coupon = Coupon::createNew();
+        $event = Event::scope()->findOrfail($request->get('event_id'));
+
+        $coupon = Coupon::createNew($event->account_id, $event->user_id);
 
         if (!$coupon->validate($request->all())) {
             return response()->json([
@@ -118,7 +165,9 @@ class CouponsController extends MyBaseController
             $coupon->percent_off = strip_tags($request->get('value'));
 
         $coupon->type = strip_tags($request->get('type'));
-        $coupon->organiser_id = $request->get('organiser_id');
+        $coupon->event_id = $request->get('event_id');
+        $coupon->organiser_id = $event->organiser_id;
+        $coupon->limit_number = $request->get('limit_number');
         $coupon->is_active = 1;
         $coupon->end_date = $request->get('end_date') ? Carbon::createFromFormat('d-m-Y H:i',
             $request->get('end_date')) : null;
@@ -139,7 +188,7 @@ class CouponsController extends MyBaseController
             'status'      => 'success',
             'id'          => $coupon->id,
             'redirectUrl' => route('showOrganiserCoupons', [
-                'organiser_id'  => $coupon->organiser_id,
+                'event_id'  => $coupon->event_id,
                 'first_run' => 'yup',
             ]),
         ]);
@@ -149,12 +198,11 @@ class CouponsController extends MyBaseController
     {
         $data = [
             'modal_id'     => $request->get('modal_id'),
-            'organisers'   => Organiser::scope()->lists('name', 'id'),
-            'organiser_id' => $request->get('organiser_id') ? $request->get('organiser_id') : false,
+            'event_id' => $request->get('event_id') ? $request->get('event_id') : false,
             'coupon'=> Coupon::find($coupon_id)
         ];
 
-        return view('ManageOrganiser.Modals.EditCoupon', $data);
+        return view('ManageEvent.Modals.EditCoupon', $data);
     }
 
 
@@ -178,6 +226,7 @@ class CouponsController extends MyBaseController
             $coupon->percent_off = strip_tags($request->get('value'));
 
         $coupon->type = strip_tags($request->get('type'));
+        $coupon->limit_number = $request->get('limit_number');
         $coupon->is_active = $request->get('is_active');
         $coupon->end_date = $request->get('end_date') ? Carbon::createFromFormat('d-m-Y H:i',
             $request->get('end_date')) : null;
