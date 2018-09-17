@@ -153,10 +153,57 @@
 
 {{--Payfort--}}
 <section class="payment_gateway_options"  id="gateway_{{config('attendize.payment_gateway_payfort')}}">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('payfort[merchant_identifier]', trans("ManageAccount.merchantIdentifier"), array('class'=>'control-label ')) !!}
+                {!! Form::text('payfort[merchant_identifier]', $account->getGatewayConfigVal(config('attendize.payment_gateway_payfort'), 'merchant_identifier'),[ 'class'=>'form-control'])  !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('payfort[access_code]', trans("ManageAccount.accessCode"), ['class'=>'control-label ']) !!}
+                {!! Form::text('payfort[access_code]', $account->getGatewayConfigVal(config('attendize.payment_gateway_payfort'), 'access_code'),[ 'class'=>'form-control'])  !!}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('payfort[sha_type]', trans("ManageAccount.sha_type"), array('class'=>'control-label ')) !!}
+                {!! Form::text('payfort[sha_type]', $account->getGatewayConfigVal(config('attendize.payment_gateway_payfort'), 'sha_type'),[ 'class'=>'form-control'])  !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('payfort[sha_request_phrase]', trans("ManageAccount.requestSHAPhrase"), ['class'=>'control-label ']) !!}
+                {!! Form::text('payfort[sha_request_phrase]', $account->getGatewayConfigVal(config('attendize.payment_gateway_payfort'), 'sha_request_phrase'),[ 'class'=>'form-control'])  !!}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('payfort[sha_response_phrase]', trans("ManageAccount.responseSHAPhrase"), array('class'=>'control-label ')) !!}
+                {!! Form::text('payfort[sha_response_phrase]', $account->getGatewayConfigVal(config('attendize.payment_gateway_payfort'), 'sha_response_phrase'),[ 'class'=>'form-control'])  !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('payfort[currency]', trans("ManageAccount.currency"), array('class'=>'control-label ')) !!}
+                {!! Form::text('payfort[currency]', $account->getGatewayConfigVal(config('attendize.payment_gateway_payfort'), 'currency'),[ 'class'=>'form-control'])  !!}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('payfort[PAYFORT_USE_SANDBOX]', trans("ManageAccount.sandboxMode"), array('class'=>'control-label ')) !!}
+                {!! Form::checkbox('payfort[PAYFORT_USE_SANDBOX]',1,$account->getGatewayConfigVal(config('attendize.payment_gateway_payfort'), 'PAYFORT_USE_SANDBOX'),[ 'class'=>'form-control'])  !!}
+            </div>
+        </div>
+    </div>
 </section>
-
-
-
 
 <div class="row">
     <div class="col-md-12">

@@ -756,7 +756,16 @@ class EventCheckoutController extends Controller
         $request_data = $ticket_order['request_data'][0];
         $orderService = new OrderService($ticket_order['order_total'], $ticket_order['total_booking_fee'], $event);
         $orderService->calculateFinalCosts();
-        return Payfort::redirection()->displayRedirectionPage([
+
+        return Payfort::redirection( [
+            'sandbox' => $ticket_order['account_payment_gateway']->config['PAYFORT_USE_SANDBOX'],
+            'merchant_identifier' => $ticket_order['account_payment_gateway']->config['merchant_identifier'],
+            'access_code' =>  $ticket_order['account_payment_gateway']->config['access_code'],
+            'sha_type' => $ticket_order['account_payment_gateway']->config['sha_type'],
+            'sha_request_phrase' => $ticket_order['account_payment_gateway']->config['sha_request_phrase'],
+            'sha_response_phrase' => $ticket_order['account_payment_gateway']->config['sha_response_phrase'],
+            'currency' =>$ticket_order['account_payment_gateway']->config['currency'],
+        ])->displayRedirectionPage([
             'command' => 'PURCHASE',              # AUTHORIZATION/PURCHASE according to your operation.
             'merchant_reference' => $event_id.'-'.Order::getNextId().'-'.time(),   # You reference id for this operation (Order id for example).
             'amount' => $orderService->getGrandTotal(),                           # The operation amount.
