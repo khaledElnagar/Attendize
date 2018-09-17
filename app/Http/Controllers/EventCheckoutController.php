@@ -758,7 +758,7 @@ class EventCheckoutController extends Controller
         $orderService->calculateFinalCosts();
         return Payfort::redirection()->displayRedirectionPage([
             'command' => 'PURCHASE',              # AUTHORIZATION/PURCHASE according to your operation.
-            'merchant_reference' => $event_id.'-'.Order::getNextId(),   # You reference id for this operation (Order id for example).
+            'merchant_reference' => $event_id.'-'.Order::getNextId().'-'.time(),   # You reference id for this operation (Order id for example).
             'amount' => $orderService->getGrandTotal(),                           # The operation amount.
             'currency' => 'SAR',                       # Optional if you need to use another currenct than set in config.
             'customer_email' => $request_data['order_email']  # Customer email.
