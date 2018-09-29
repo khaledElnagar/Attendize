@@ -35,7 +35,7 @@
     <div class="panel-footer">
         <ul class="nav nav-section nav-justified">
             <li>
-                <a href="#" data-modal-id="EditCoupon" data-href="{{route('showEditCoupon', ['coupon_id' => @$coupon->id])}}" class="loadModal">
+                <a href="#" data-modal-id="EditCoupon" data-href="{{route('showEditCoupon', ['coupon_id' => @$coupon->id,'event_id'=>$event->id])}}" class="loadModal">
                     <i class="ico-edit"></i> @lang("basic.edit")
                 </a>
             </li>

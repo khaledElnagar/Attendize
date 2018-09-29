@@ -24,13 +24,16 @@ class CouponsController extends MyBaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request,$event_id)
+    public function applyCoupon(Request $request,$event_id)
     {
         $coupon = Coupon::findByCode($request->get('coupon_code'),$event_id);
-        if(!$coupon)
+
+        if(!$coupon || $coupon->orders_count >= $coupon->limit_number)
         {
-            session()->flash('message', 'Whoops! Invalid coupon code. Please try again.');
-            return redirect()->back();
+            return response()->json([
+                'status'      => 'fails',
+                'message'   =>'Whoops! Invalid coupon code. Please try again'
+            ]);
         }
 
         $ticket_order = session()->get('ticket_order_' . $event_id);
@@ -133,11 +136,11 @@ class CouponsController extends MyBaseController
 
     }
 
-    public function showCreateCoupon(Request $request)
+    public function showCreateCoupon(Request $request,$event_id)
     {
         $data = [
             'modal_id'     => $request->get('modal_id'),
-            'event_id' => $request->get('event_id') ? $request->get('event_id') : false,
+            'event_id' => $event_id,
         ];
 
         return view('ManageEvent.Modals.CreateCoupon', $data);

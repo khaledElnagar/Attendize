@@ -2,7 +2,7 @@
 
     @include('ManageOrganiser.Partials.EventCreateAndEditJS');
 
-    {!! Form::open(array('url' => route('postCreateCoupon'), 'class' => 'ajax gf')) !!}
+    {!! Form::open(array('url' => route('postCreateCoupon',['event_id'=>$event_id]), 'class' => 'ajax gf')) !!}
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header text-center">

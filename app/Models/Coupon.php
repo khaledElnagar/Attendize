@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Coupon extends MyBaseModel
 {
+
+    public $timestamps = false;
+
     public $rules = [
         'code'  => ['required','unique:coupons'],
         'type'  => ['required'],
@@ -28,15 +31,19 @@ class Coupon extends MyBaseModel
 
     public static function findByCode($code,$event_id)
     {
-        return self::where('code',$code)->where('end_date','>=',date('Y-m-d H:i:s'))->where('is_active',1)->where('event_id',$event_id)->first();
+        return self::where('code',$code)->where('end_date','>=',date('Y-m-d H:i:s'))->where('is_active',1)->where('event_id',$event_id)->withCount('orders')->first();
     }
 
     public function organiser()
     {
-        return $this->belongsTo(\App\Models\Organiser::class);
+        return $this->belongsTo(Organiser::class);
     }
 
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
     public function discount($total)
     {
         if($this->type == 'fixed')

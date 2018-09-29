@@ -303,13 +303,19 @@ Route::group(
         /*
          * Coupons dashboard
          */
-        Route::group(['prefix' => '{event_id}/Coupons'], function () {
+        Route::group(['prefix' => 'events-coupons/{event_id}/coupons'], function () {
 
             /*
              * ----------
              * Create Coupon
              * ----------
              */
+
+            Route::get('/lists', [
+                'as'   => 'showOrganiserCoupons',
+                'uses' => 'CouponsController@showCouponsList',
+            ]);
+
             Route::get('create', [
                 'as'   => 'showCreateCoupon',
                 'uses' => 'CouponsController@showCreateCoupon',
@@ -355,12 +361,6 @@ Route::group(
                     'event_id' => $event_id,
                 ]);
             });
-
-            Route::get('{event_id}/coupons', [
-                'as'   => 'showOrganiserCoupons',
-                'uses' => 'CouponsController@showCouponsList',
-            ]);
-
             /*
              * @todo Move to a controller
              */
@@ -774,9 +774,9 @@ Route::group(
         'uses' => 'EventCheckoutController@payfortPaymentDone',
     ]);
 
-    Route::post('/coupon/{event_id}',[
+    Route::post('/discount/{event_id}/applyCoupon',[
         'as'=>'coupon.store',
-        'uses' => 'CouponsController@store',
+        'uses' => 'CouponsController@applyCoupon',
     ]);
 
     Route::delete('/coupon/{event_id}/delete',[
