@@ -205,13 +205,6 @@
 
 
                 @if(@$payment_gateway->is_on_site)
-                    <input type="hidden" name="product_id" value="1" id="client_merchant_oid">
-                    <!-- this is your order total, the amount that you want to charge the card -->
-                    <input type="hidden" name="product_amount" value="200.00" id="client_merchant_amount">
-                    <!-- this is options and can be any name that you want to provide to the product -->
-                    <input type="hidden" name="product_name" value="micro-monthly">
-                    <!-- paymentMethod is a mandatory value and must be included -->
-                    <input type="hidden" name="paymentMethod" value="cc_merchant_page_2">
                     <div class="online_payment">
                         <div class="row">
                             <div class="col-md-12">

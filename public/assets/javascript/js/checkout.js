@@ -288,7 +288,7 @@ var generatePaymentPage = (function() {
     process: function () {
       var $form = $('#payfort_fort_form');
       var form_elements = {};
-      form_elements = $form.find('input:hidden').serialize();
+      form_elements = $form.find('input').serialize();
       $.ajax({
         type: 'post',
         dataType: 'json',
@@ -306,7 +306,7 @@ var generatePaymentPage = (function() {
             mp2_params.card_security_code = $('#cvv').val();
             $.each(mp2_params, function(k, v){
                 $('<input>').attr({
-                    type: 'hidden',
+                    type: 'text',
                     id: k,
                     name: k,
                     value: v

@@ -767,15 +767,21 @@ class EventCheckoutController extends Controller
         $p->setResponsePhrase( $ticket_order['account_payment_gateway']->config['sha_response_phrase']);
         $p->setRequestPhrase( $ticket_order['account_payment_gateway']->config['sha_request_phrase']);
         $p->setDefaultCurrency( $ticket_order['account_payment_gateway']->config['currency']);
-
+        $p->setAmount($orderService->getGrandTotal());
         unset($_POST['action']);
+        unset($_POST['ticket_holder_first_name']);
+        unset($_POST['order_email']);
+        unset($_POST['order_last_name']);
+        unset($_POST['order_first_name']);
+        unset($_POST['ticket_holder_last_name']);
+        unset($_POST['ticket_holder_email']);
 
         $p->setReturnUrl("http".(!empty($_SERVER['HTTPS'])?"s":"")."://".$_SERVER['SERVER_NAME'].'/payfort/payment',$_POST);
 
         $p->setRememberToken(TRUE);
         $p->setMerchantReference(rand(1, getrandmax()));
         header('Content-Type: application/json');
-        echo $p->processRequest(array('paymentMethod'=>'cc_merchant_page_2'));
+        return $p->processRequest(array('paymentMethod'=>'cc_merchant_page_2'));
 
 //        return Payfort::redirection( [
 //            'sandbox' => $ticket_order['account_payment_gateway']->config['PAYFORT_USE_SANDBOX'],
@@ -796,10 +802,23 @@ class EventCheckoutController extends Controller
 
     public function payfortPaymentDone(Request $request)
     {
+        $event_id = $request->get('event_id');
+        $event = Event::findOrFail($event_id);
+        $ticket_order = session()->get('ticket_order_' . $event_id);
+        $request_data = $ticket_order['request_data'][0];
+        $orderService = new OrderService($ticket_order['order_total'], $ticket_order['total_booking_fee'], $event);
+        $orderService->calculateFinalCosts();
+
         // set the currency and amount
         $p = new PayfortMerchant2();
-        $p->setDefaultCurrency('SAR');
-        $p->setAmount($request->get('product_amount'));
+        $p->setMerchantIdentifier($ticket_order['account_payment_gateway']->config['merchant_identifier']);
+        $p->setMerchantAccessCode( $ticket_order['account_payment_gateway']->config['access_code']);
+        $p->setSandboxMode($ticket_order['account_payment_gateway']->config['PAYFORT_USE_SANDBOX']);
+        $p->setHashType($ticket_order['account_payment_gateway']->config['sha_type']);
+        $p->setResponsePhrase( $ticket_order['account_payment_gateway']->config['sha_response_phrase']);
+        $p->setRequestPhrase( $ticket_order['account_payment_gateway']->config['sha_request_phrase']);
+        $p->setDefaultCurrency( $ticket_order['account_payment_gateway']->config['currency']);
+        $p->setAmount($orderService->getGrandTotal());
 
         // set the command for a direct purchase
         $p->setServiceCommand('PURCHASE');
@@ -813,12 +832,13 @@ class EventCheckoutController extends Controller
 
         /* NOTE: CHANGE THIS TO TO INCLUDE YOUR CUSTOMER INFORMATION */
         // set customer information to be billed
-        $p->setCustomerData(1, 'Bob Smith', 'bob@example.com');
+        $p->setCustomerData($request_data['event_id'], $request_data['order_first_name'].' '.$request_data['order_last_name'], $request_data['order_email']);
 
         // call the process request
         $arr = $p->processMerchantRequest($_REQUEST);
 
-        if ($arr['success']) {
+
+/*        if($arr['success']) {
             echo "<h1>Success</h1>";
             // redirect success
             // The parameter of merchant_reference will contain the invoice ID. Mark that as PAID.
@@ -827,35 +847,25 @@ class EventCheckoutController extends Controller
             // Save the token if you set Remember Token to true.
             echo "<pre>";
             print_r($arr);
-            echo "</pre>";
+            echo"</pre>";
         } else {
             echo "<h1>Failed</h1>";
             // redirect to error URL
             // The parameter of merchant_reference will contain the invoice ID. Mark that us UNPAID
             echo "<pre>";
             print_r($arr);
-            echo "</pre>";
+            echo"</pre>";
+        }*/
+
+        if ($arr['success']) {
+            return $this->completeOrder($event_id,false);
+        } else {
+            session()->flash('message', 'Whoops! There was a problem processing your order. Please try again.');
+            return response()->redirectToRoute('showEventCheckout', [
+                'event_id'             => $event_id,
+                'is_payment_cancelled' => 1,
+            ]);
         }
-
-
-        /*        $responseSignature = Payfort::redirection()->calcPayfortSignature($request->all(),'response');
-                $references = explode('-',$request->get('merchant_reference'));
-                $event_id = $references[0];
-                if($responseSignature == $request->get('signature'))
-                {
-
-                    if((int)$request->get('response_code') === 14000)
-                    {
-                       return $this->completeOrder($event_id,false);
-                    }
-                }
-
-                session()->flash('message', 'Whoops! There was a problem processing your order. Please try again.');
-                return response()->redirectToRoute('showEventCheckout', [
-                    'event_id'             => $event_id,
-                    'is_payment_cancelled' => 1,
-                ]);*/
-
     }
 
     /**
