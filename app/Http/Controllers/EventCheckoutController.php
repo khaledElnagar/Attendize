@@ -20,7 +20,8 @@ use Carbon\Carbon;
 use Cookie;
 use DB;
 use Illuminate\Http\Request;
-use LaravelPayfort\Facades\Payfort;
+//use LaravelPayfort\Facades\Payfort;
+use App\Payfort\PayfortMerchant2;
 use Log;
 use Omnipay;
 use PDF;
@@ -312,12 +313,12 @@ class EventCheckoutController extends Controller
         $order->rules = $order->rules + $validation_rules;
         $order->messages = $order->messages + $validation_messages;
 
-        if (!$order->validate($request->all())) {
+/*        if (!$order->validate($request->all())) {
             return response()->json([
                 'status'   => 'error',
                 'messages' => $order->errors(),
             ]);
-        }
+        }*/
 
         /*
          * Add the request data to a session in case payment is required off-site
@@ -757,42 +758,104 @@ class EventCheckoutController extends Controller
         $orderService = new OrderService($ticket_order['order_total'], $ticket_order['total_booking_fee'], $event);
         $orderService->calculateFinalCosts();
 
-        return Payfort::redirection( [
-            'sandbox' => $ticket_order['account_payment_gateway']->config['PAYFORT_USE_SANDBOX'],
-            'merchant_identifier' => $ticket_order['account_payment_gateway']->config['merchant_identifier'],
-            'access_code' =>  $ticket_order['account_payment_gateway']->config['access_code'],
-            'sha_type' => $ticket_order['account_payment_gateway']->config['sha_type'],
-            'sha_request_phrase' => $ticket_order['account_payment_gateway']->config['sha_request_phrase'],
-            'sha_response_phrase' => $ticket_order['account_payment_gateway']->config['sha_response_phrase'],
-            'currency' =>$ticket_order['account_payment_gateway']->config['currency'],
-        ])->displayRedirectionPage([
-            'command' => 'PURCHASE',              # AUTHORIZATION/PURCHASE according to your operation.
-            'merchant_reference' => $event_id.'-'.Order::getNextId().'-'.time(),   # You reference id for this operation (Order id for example).
-            'amount' => $orderService->getGrandTotal(),                           # The operation amount.
-            'currency' => 'SAR',                       # Optional if you need to use another currenct than set in config.
-            'customer_email' => $request_data['order_email']  # Customer email.
-        ]);
+        $p = new PayfortMerchant2();
+
+        $p->setMerchantIdentifier($ticket_order['account_payment_gateway']->config['merchant_identifier']);
+        $p->setMerchantAccessCode( $ticket_order['account_payment_gateway']->config['access_code']);
+        $p->setSandboxMode($ticket_order['account_payment_gateway']->config['PAYFORT_USE_SANDBOX']);
+        $p->setHashType($ticket_order['account_payment_gateway']->config['sha_type']);
+        $p->setResponsePhrase( $ticket_order['account_payment_gateway']->config['sha_response_phrase']);
+        $p->setRequestPhrase( $ticket_order['account_payment_gateway']->config['sha_request_phrase']);
+        $p->setDefaultCurrency( $ticket_order['account_payment_gateway']->config['currency']);
+
+        unset($_POST['action']);
+
+        $p->setReturnUrl("http".(!empty($_SERVER['HTTPS'])?"s":"")."://".$_SERVER['SERVER_NAME'].'/payfort/payment',$_POST);
+
+        $p->setRememberToken(TRUE);
+        $p->setMerchantReference(rand(1, getrandmax()));
+        header('Content-Type: application/json');
+        echo $p->processRequest(array('paymentMethod'=>'cc_merchant_page_2'));
+
+//        return Payfort::redirection( [
+//            'sandbox' => $ticket_order['account_payment_gateway']->config['PAYFORT_USE_SANDBOX'],
+//            'merchant_identifier' => $ticket_order['account_payment_gateway']->config['merchant_identifier'],
+//            'access_code' =>  $ticket_order['account_payment_gateway']->config['access_code'],
+//            'sha_type' => $ticket_order['account_payment_gateway']->config['sha_type'],
+//            'sha_request_phrase' => $ticket_order['account_payment_gateway']->config['sha_request_phrase'],
+//            'sha_response_phrase' => $ticket_order['account_payment_gateway']->config['sha_response_phrase'],
+//
+//        ])->displayRedirectionPage([
+//            'command' => 'PURCHASE',              # AUTHORIZATION/PURCHASE according to your operation.
+//            'merchant_reference' => $event_id.'-'.Order::getNextId().'-'.time(),   # You reference id for this operation (Order id for example).
+//            'amount' => $orderService->getGrandTotal(),                           # The operation amount.
+//            'currency' => 'SAR',                       # Optional if you need to use another currenct than set in config.
+//            'customer_email' => $request_data['order_email']  # Customer email.
+//        ]);
     }
 
     public function payfortPaymentDone(Request $request)
     {
-        $responseSignature = Payfort::redirection()->calcPayfortSignature($request->all(),'response');
-        $references = explode('-',$request->get('merchant_reference'));
-        $event_id = $references[0];
-        if($responseSignature == $request->get('signature'))
-        {
+        // set the currency and amount
+        $p = new PayfortMerchant2();
+        $p->setDefaultCurrency('SAR');
+        $p->setAmount($request->get('product_amount'));
 
-            if((int)$request->get('response_code') === 14000)
-            {
-               return $this->completeOrder($event_id,false);
-            }
+        // set the command for a direct purchase
+        $p->setServiceCommand('PURCHASE');
+
+        // remember the token
+        $p->setRememberToken(TRUE);
+
+        /* NOTE: CHANGE THIS TO YOUR RETURN URL */
+        // setting return url.
+        $p->setReturnUrl("http" . (!empty($_SERVER['HTTPS']) ? "s" : "") . "://" . $_SERVER['SERVER_NAME'] . '/pay-complete');
+
+        /* NOTE: CHANGE THIS TO TO INCLUDE YOUR CUSTOMER INFORMATION */
+        // set customer information to be billed
+        $p->setCustomerData(1, 'Bob Smith', 'bob@example.com');
+
+        // call the process request
+        $arr = $p->processMerchantRequest($_REQUEST);
+
+        if ($arr['success']) {
+            echo "<h1>Success</h1>";
+            // redirect success
+            // The parameter of merchant_reference will contain the invoice ID. Mark that as PAID.
+            // save the card details against the user if this is the first time.
+            // Make sure the same token and card number is non existing.
+            // Save the token if you set Remember Token to true.
+            echo "<pre>";
+            print_r($arr);
+            echo "</pre>";
+        } else {
+            echo "<h1>Failed</h1>";
+            // redirect to error URL
+            // The parameter of merchant_reference will contain the invoice ID. Mark that us UNPAID
+            echo "<pre>";
+            print_r($arr);
+            echo "</pre>";
         }
 
-        session()->flash('message', 'Whoops! There was a problem processing your order. Please try again.');
-        return response()->redirectToRoute('showEventCheckout', [
-            'event_id'             => $event_id,
-            'is_payment_cancelled' => 1,
-        ]);
+
+        /*        $responseSignature = Payfort::redirection()->calcPayfortSignature($request->all(),'response');
+                $references = explode('-',$request->get('merchant_reference'));
+                $event_id = $references[0];
+                if($responseSignature == $request->get('signature'))
+                {
+
+                    if((int)$request->get('response_code') === 14000)
+                    {
+                       return $this->completeOrder($event_id,false);
+                    }
+                }
+
+                session()->flash('message', 'Whoops! There was a problem processing your order. Please try again.');
+                return response()->redirectToRoute('showEventCheckout', [
+                    'event_id'             => $event_id,
+                    'is_payment_cancelled' => 1,
+                ]);*/
+
     }
 
     /**

@@ -86,7 +86,7 @@
             <div class="event_order_form">
 
                 @if($account_payment_gateway->payment_gateway_id === 5) <!-- payfort -->
-                    {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]), 'class' => ($order_requires_payment && @$payment_gateway->is_on_site) ? '' : '', 'data-stripe-pub-key' => isset($account_payment_gateway->config['publishableKey']) ? $account_payment_gateway->config['publishableKey'] : '']) !!}
+                    {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]),'id'=>'payfort_fort_form' ,'class' => ($order_requires_payment && @$payment_gateway->is_on_site) ? '' : '']) !!}
                 @else
                     {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]), 'class' => ($order_requires_payment && @$payment_gateway->is_on_site) ? 'ajax payment-form' : 'ajax', 'data-stripe-pub-key' => isset($account_payment_gateway->config['publishableKey']) ? $account_payment_gateway->config['publishableKey'] : '']) !!}
                 @endif
@@ -205,12 +205,27 @@
 
 
                 @if(@$payment_gateway->is_on_site)
+                    <input type="hidden" name="product_id" value="1" id="client_merchant_oid">
+                    <!-- this is your order total, the amount that you want to charge the card -->
+                    <input type="hidden" name="product_amount" value="200.00" id="client_merchant_amount">
+                    <!-- this is options and can be any name that you want to provide to the product -->
+                    <input type="hidden" name="product_name" value="micro-monthly">
+                    <!-- paymentMethod is a mandatory value and must be included -->
+                    <input type="hidden" name="paymentMethod" value="cc_merchant_page_2">
                     <div class="online_payment">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
+                                    {!! Form::label('card-holder-name', trans("Public_ViewEvent.card_holder")) !!}
+                                    <input required="required" type="text" autocomplete="off" id="card_holder" placeholder="{{ trans("Public_ViewEvent.card_holder")}}" class="form-control card-holder" size="20" data-stripe="number">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
                                     {!! Form::label('card-number', trans("Public_ViewEvent.card_number")) !!}
-                                    <input required="required" type="text" autocomplete="off" placeholder="**** **** **** ****" class="form-control card-number" size="20" data-stripe="number">
+                                    <input required="required" type="text" autocomplete="off" id="card_number" placeholder="**** **** **** ****" class="form-control card-number" size="20" data-stripe="number">
                                 </div>
                             </div>
                         </div>
@@ -220,7 +235,8 @@
                                     {!! Form::label('card-expiry-month', trans("Public_ViewEvent.expiry_month")) !!}
                                     {!!  Form::selectRange('card-expiry-month',1,12,null, [
                                             'class' => 'form-control card-expiry-month',
-                                            'data-stripe' => 'exp_month'
+                                            'data-stripe' => 'exp_month',
+                                            'id' => 'exp_month',
                                         ] )  !!}
                                 </div>
                             </div>
@@ -229,7 +245,8 @@
                                     {!! Form::label('card-expiry-year', trans("Public_ViewEvent.expiry_year")) !!}
                                     {!!  Form::selectRange('card-expiry-year',date('Y'),date('Y')+10,null, [
                                             'class' => 'form-control card-expiry-year',
-                                            'data-stripe' => 'exp_year'
+                                            'data-stripe' => 'exp_year',
+                                            'id' => 'exp_year'
                                         ] )  !!}</div>
                             </div>
                         </div>
@@ -237,7 +254,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     {!! Form::label('card-expiry-year', trans("Public_ViewEvent.cvc_number")) !!}
-                                    <input required="required" placeholder="***" class="form-control card-cvc" data-stripe="cvc">
+                                    <input required="required" placeholder="***" id='cvv' class="form-control card-cvc" data-stripe="cvc">
                                 </div>
                             </div>
                         </div>
@@ -254,7 +271,7 @@
                 @endif
 
                {!! Form::hidden('is_embedded', $is_embedded) !!}
-               {!! Form::submit(trans("Public_ViewEvent.checkout_submit"), ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
+               {!! Form::submit(trans("Public_ViewEvent.checkout_submit"), ['class' => 'btn btn-lg btn-success card-submit','id'=>'payfort_fort_pay_action', 'style' => 'width:100%;']) !!}
 
             </div>
         </div>
@@ -264,3 +281,17 @@
     <script>showMessage('{{session()->get('message')}}');</script>
 @endif
 
+
+@if($account_payment_gateway->payment_gateway_id === 5) <!-- payfort -->
+    <script src="/assets/javascript/js/jquery-3.1.1.js"></script>
+    <!-- the checkout.js file contains all javascript related to processing the payment transaction -->
+    <script src="/assets/javascript/js/checkout.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#payfort_fort_pay_action').on('click',function(e) {
+                e.preventDefault();
+                payfortFortMerchant.process();
+            });
+        });
+    </script>
+@endif
