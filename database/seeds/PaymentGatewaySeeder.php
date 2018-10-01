@@ -50,7 +50,7 @@ class PaymentGatewaySeeder extends Seeder
                 'name' => 'Payfort',
                 'provider_name' => 'Payfort',
                 'provider_url' => 'https://www.payfort.com',
-                'is_on_site' => 0,
+                'is_on_site' => 1,
                 'can_refund' => 0,
             ],
         ];

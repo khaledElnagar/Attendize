@@ -1,0 +1,117 @@
+========================================================
+
+Signature String to be calcuated : 
+TESTSHAINaccess_code=NkWusiYB8SnUWn9SYSBWlanguage=enmerchant_identifier=VIaNcEHzmerchant_reference=1339774693return_url=http://dev.attendize.test/payfort/payment?_token=sRyJETnErUEk2Fq8IXtd677yTs7F3Q2EH6nyn7kW&event_id=1&is_embedded=0&3ds=no&t=1538428853service_command=TOKENIZATIONTESTSHAIN
+
+========================================================
+
+Fort Redirect Request Parameters 
+Array
+(
+    [merchant_identifier] => VIaNcEHz
+    [access_code] => NkWusiYB8SnUWn9SYSBW
+    [merchant_reference] => 1339774693
+    [language] => en
+    [return_url] => http://dev.attendize.test/payfort/payment?_token=sRyJETnErUEk2Fq8IXtd677yTs7F3Q2EH6nyn7kW&event_id=1&is_embedded=0&3ds=no&t=1538428853
+    [service_command] => TOKENIZATION
+    [signature] => cb9bd5057f9698563bcc4beda425ad6c98e206b6c9c3b1097e69bc0e762c6282
+    [remember_me] => YES
+)
+
+
+========================================================
+
+Fort Merchant Page Response Parameters 
+Array
+(
+    [_token] => sRyJETnErUEk2Fq8IXtd677yTs7F3Q2EH6nyn7kW
+    [event_id] => 1
+    [is_embedded] => 0
+    [3ds] => no
+    [t] => 1538428853
+    [response_code] => 18000
+    [card_number] => 400555******0001
+    [card_holder_name] => khaled
+    [signature] => dc4e7f93f0948a84d06c18e726a18c56442cee2ca3c0198fbd27421881a508f3
+    [merchant_identifier] => VIaNcEHz
+    [access_code] => NkWusiYB8SnUWn9SYSBW
+    [expiry_date] => 2105
+    [language] => en
+    [response_message] => Success
+    [service_command] => TOKENIZATION
+    [merchant_reference] => 1339774693
+    [token_name] => 76994BA02FAC769FE053321E320A72D0
+    [return_url] => http://dev.attendize.test/payfort/payment?_token=sRyJETnErUEk2Fq8IXtd677yTs7F3Q2EH6nyn7kW&event_id=1&is_embedded=0&3ds=no&t=1538428853
+    [remember_me] => YES
+    [status] => 18
+    [card_bin] => 400555
+)
+
+
+========================================================
+
+Signature String to be calcuated : 
+TESTSHAOUTaccess_code=NkWusiYB8SnUWn9SYSBWcard_bin=400555card_holder_name=khaledcard_number=400555******0001expiry_date=2105language=enmerchant_identifier=VIaNcEHzmerchant_reference=1339774693remember_me=YESresponse_code=18000response_message=Successreturn_url=http://dev.attendize.test/payfort/payment?_token=sRyJETnErUEk2Fq8IXtd677yTs7F3Q2EH6nyn7kW&event_id=1&is_embedded=0&3ds=no&t=1538428853service_command=TOKENIZATIONstatus=18token_name=76994BA02FAC769FE053321E320A72D0TESTSHAOUT
+
+========================================================
+
+Signature String to be calcuated : 
+TESTSHAINaccess_code=NkWusiYB8SnUWn9SYSBWamount=10000check_3ds=NOcommand=PURCHASEcurrency=SARcustomer_email=karter_91@yahoo.comcustomer_ip=192.168.10.1customer_name=khaled ahmedlanguage=enmerchant_identifier=VIaNcEHzmerchant_reference=1339774693remember_me=YESreturn_url=http://dev.attendize.test/pay-completetoken_name=76994BA02FAC769FE053321E320A72D0TESTSHAIN
+
+========================================================
+
+Fort Host2Host Request Parameters 
+Array
+(
+    [merchant_reference] => 1339774693
+    [access_code] => NkWusiYB8SnUWn9SYSBW
+    [command] => PURCHASE
+    [merchant_identifier] => VIaNcEHz
+    [customer_ip] => 192.168.10.1
+    [amount] => 10000
+    [currency] => SAR
+    [customer_email] => karter_91@yahoo.com
+    [customer_name] => khaled ahmed
+    [token_name] => 76994BA02FAC769FE053321E320A72D0
+    [language] => en
+    [return_url] => http://dev.attendize.test/pay-complete
+    [remember_me] => YES
+    [check_3ds] => NO
+    [signature] => 5fa8f82b1fff216dd506b06f91320204cd12c55eec4f69c014033157ffdb8936
+)
+
+
+========================================================
+
+Fort Host2Host Response Parameters 
+Array
+(
+    [amount] => 10000
+    [response_code] => 14000
+    [card_number] => 400555******0001
+    [card_holder_name] => khaled
+    [signature] => f44d8058db93b9c0be9e8fb05204594d373338873db07982ab66513f15400c89
+    [merchant_identifier] => VIaNcEHz
+    [access_code] => NkWusiYB8SnUWn9SYSBW
+    [payment_option] => VISA
+    [expiry_date] => 2105
+    [customer_ip] => 192.168.10.1
+    [language] => en
+    [eci] => ECOMMERCE
+    [fort_id] => 153842810200082950
+    [command] => PURCHASE
+    [response_message] => Success
+    [merchant_reference] => 1339774693
+    [authorization_code] => 660033
+    [customer_email] => karter_91@yahoo.com
+    [currency] => SAR
+    [customer_name] => khaled ahmed
+    [status] => 14
+)
+
+
+========================================================
+
+Signature String to be calcuated : 
+TESTSHAOUTaccess_code=NkWusiYB8SnUWn9SYSBWamount=10000authorization_code=660033card_holder_name=khaledcard_number=400555******0001command=PURCHASEcurrency=SARcustomer_email=karter_91@yahoo.comcustomer_ip=192.168.10.1customer_name=khaled ahmedeci=ECOMMERCEexpiry_date=2105fort_id=153842810200082950language=enmerchant_identifier=VIaNcEHzmerchant_reference=1339774693payment_option=VISAresponse_code=14000response_message=Successstatus=14TESTSHAOUT
+

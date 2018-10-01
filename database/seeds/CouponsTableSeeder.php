@@ -11,7 +11,7 @@ class CouponsTableSeeder extends Seeder
      */
     public function run()
     {
-        Coupon::Create([
+/*        Coupon::Create([
            'account_id'=>1,
            'organiser_id'=>1,
            'user_id'=>1,
@@ -29,6 +29,6 @@ class CouponsTableSeeder extends Seeder
             'type'=>'percent',
             'percent_off'=>50,
             'end_date'=>date('Y-m-d H:i:s'),
-        ]);
+        ]);*/
     }
 }
